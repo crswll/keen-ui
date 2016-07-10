@@ -70,8 +70,18 @@
             <ui-textbox
                 label="Name" name="name" type="text" placeholder="Enter your name"
                 help-text="If you have multiple names, enter the one you prefer"
-                validation-rules="required" :autocomplete="false"
+                validation-rules="required" autocomplete="off"
             ></ui-textbox>
+
+            <h4>Set validation state externally</h4>
+
+            <ui-textbox
+                label="Name" name="name" type="text" placeholder="Enter your name"
+                help-text="If you have multiple names, enter the one you prefer"
+                autocomplete="off" id="set-validation-state" :valid.sync="isValid"
+            ></ui-textbox>
+
+            <ui-button class="m-t-8" @click="toggleValidity">Toggle validity</ui-button>
 
             <h4>With validation and counter (max length)</h4>
 
@@ -91,7 +101,7 @@
                 label="Email" name="email" type="email" placeholder="Enter your email"
                 help-text="If you have multiple email addresses, enter the one you use most often"
                 validation-rules="required|email|min:10|max:64" validate-on-blur
-                :autocomplete="false"
+                autocomplete="off"
             ></ui-textbox>
 
             <h4>With custom validation messages</h4>
@@ -101,7 +111,7 @@
             <ui-textbox
                 label="Email" name="email" type="text" placeholder="Enter your email"
                 help-text="If you have multiple email addresses, enter the one you use most often"
-                validation-rules="required|email" :autocomplete="false"
+                validation-rules="required|email" autocomplete="off"
                 :validation-messages="validationErrorMessages"
             ></ui-textbox>
 
@@ -132,7 +142,7 @@
                 validation-rules="max:256"
             ></ui-textbox>
 
-            <ui-button @click="resetFields">Reset all fields</ui-button>
+            <ui-button class="m-t-24" @click="resetFields">Reset all fields</ui-button>
         </div>
 
         <h3>API</h3>
@@ -248,10 +258,14 @@
 
                             <tr>
                                 <td>autocomplete</td>
-                                <td>Boolean</td>
-                                <td><code>true</code></td>
+                                <td>String</td>
+                                <td><code>"on"</code></td>
                                 <td></td>
-                                <td>Determines whether or not the browser's autocomplete feature is allowed for the input. Set to <code>false</code> to disable browser autocomplete (in browsers that support it).</td>
+                                <td>
+                                    <p>Determines whether or not the browser's autocomplete feature is allowed for the input. It can also be used to customize the type of suggestions the browser should offer. See <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-autocomplete">here for more info</a>.</p>
+
+                                    <p>Set to <code>"off"</code> to disable browser autocomplete (in browsers that support it).</p>
+                                </td>
                             </tr>
 
                             <tr>
@@ -480,22 +494,37 @@ export default {
             validationErrorMessages: {
                 required: 'Please enter your email. We won\'t be able to contact you without an email address.',
                 email: 'Oops, the email address you have entered seems to be wrong. Double check?'
-            }
+            },
+            isValid: true
         };
     },
 
     methods: {
         resetFields() {
             this.$broadcast('ui-input::reset');
+        },
+
+        toggleValidity() {
+            this.$broadcast(
+                'ui-input::set-validity', !this.isValid,
+                'The input is not valid. This error message was set externally.',
+                'set-validation-state'
+            );
         }
     }
-}
+};
 </script>
 
 <style lang="stylus">
 .section-ui-textbox {
     .ui-button {
-        margin-top: 24px;
+        &.m-t-8 {
+            margin-top: 8px;
+        }
+
+        &.m-t-24 {
+            margin-top: 24px;
+        }
     }
 }
 </style>
